@@ -8,7 +8,7 @@ If $a = p^n$ is a prime power then $Ø(p^n) = p^n - p^{n - 1}$
 
 ...and it will display like this in your HTML:
 
-![Image showing formula](eulers-totient-function.png?raw=true "Euler's totient function"
+![Image showing formula](eulers-totient-function.png?raw=true "Euler's totient function")
 
 Why?
 ----
