@@ -1,5 +1,7 @@
 build/
 src/*
 assets/*
+images/*
 !src/.gitkeep
 !assets/.gitkeep
+!images/.gitkeep

@@ -1,23 +1,25 @@
-SRC := src
+MARKDOWN_SOURCE_DIR := src
+ASSETS_SOURCE_DIR := assets
+IMAGES_SOURCE_DIR := images
+
+# Built directories
 BUILD := build
-ASSET_SOURCES := assets
-ASSETS := $(BUILD)/$(ASSET_SOURCES)
+ASSETS := $(BUILD)/$(ASSETS_SOURCE_DIR)
 
-# Base names of all markdown files in $(SRC) 
-SRCS := $(notdir $(wildcard $(SRC)/*.md))
-
+# Base names of all markdown files in $(MARKDOWN_SOURCE_DIR) 
+MARKDOWN_FILES := $(notdir $(wildcard $(MARKDOWN_SOURCE_DIR)/*.md))
 # Asset files (JS, CSS)
-ASSET_FILES := $(notdir $(wildcard $(ASSET_SOURCES)/*))
+ASSET_FILES := $(notdir $(wildcard $(ASSETS_SOURCE_DIR)/*))
+# Images
+IMAGE_FILES := $(notdir $(wildcard $(IMAGES_DIR)/*))
 
 # Directories to be built
 BUILD_DIRS := $(BUILD) $(ASSETS)
 
 # Pattern substitution to create the build targets.
 # Do this so we can run all: $(TARGETS)
-TARGETS :=$(SRCS:%.md=$(BUILD)/%/index.html)
+TARGETS :=$(MARKDOWN_FILES:%.md=$(BUILD)/%/index.html)
 ASSET_BUILDS :=$(ASSET_FILES:%=$(ASSETS)/%)
-$(info ASSET_BUILDS = $(ASSET_BUILDS))
-$(info TARGETS = $(TARGETS))
 
 PANDOC_ARGS = -s \
 	      -f markdown+autolink_bare_uris+task_lists \
@@ -27,33 +29,22 @@ PANDOC_ARGS = -s \
 	      --css ../assets/compressed-style.css \
 	      -A templates/footer.html
 
-CSS_HASH := $(shell sha256sum $(ASSET_SOURCES)/compressed-style.css | head -c 10)
-CSS_FILENAME := $(ASSET_SOURCES)/compressed-style$(CSS_HASH).css))
-
-#$(info CSS_FILENAME = $(CSS_FILENAME))
+CSS_HASH := $(shell sha256sum $(ASSETS_SOURCE_DIR)/compressed-style.css | head -c 10)
+CSS_FILENAME := $(ASSETS_SOURCE_DIR)/compressed-style$(CSS_HASH).css))
 
 .PHONY: all clean build_assets $(ASSET_FILES)
 
 all: $(TARGETS) $(ASSET_BUILDS)
 
-$(ASSETS)/%: $(ASSET_SOURCES)/%
+$(ASSETS)/%: $(ASSETS_SOURCE_DIR)/%
 	@mkdir -p $(ASSETS)
 	@echo "Copying $^"
 	cp $^ $@ 
 
 # Pattern rule to build $(TARGETS)
-$(BUILD)/%/index.html: $(SRC)/%.md 
+$(BUILD)/%/index.html: $(MARKDOWN_SOURCE_DIR)/%.md 
 	@mkdir -p $(@D)
 	pandoc $(PANDOC_ARGS) -o $@ $<
 
 clean:
 	rm -rf $(BUILD_DIRS)
-# @TODO tidy up references
-
-#build_assets: $(BUILD)
-#	@mkdir -p $^/assets
-#	# Foreach file in assets, give a unique name and move to build/assets
-#	
-#	ID=$$(sha256sum assets/compressed-style.css | head -c 10)
-#	cp assets/compressed-style.css $^/assets/$(ID)
-
