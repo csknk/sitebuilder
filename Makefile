@@ -22,18 +22,18 @@ BUILD_DIRS := $(BUILD) $(ASSETS) $(IMAGES)
 TARGETS :=$(MARKDOWN_FILES:%.md=$(BUILD)/%/index.html)
 ASSET_BUILDS :=$(ASSET_FILES:%=$(ASSETS)/%)
 IMAGE_BUILDS :=$(IMAGE_FILES:%=$(IMAGES)/%)
-$(info $(IMAGE_BUILDS))
 
+CSS_HASH := $(shell sha256sum $(ASSETS_SOURCE_DIR)/compressed-style.css | head -c 10)
+CSS_FILENAME := compressed-style-$(CSS_HASH).css
+
+# Main content build - TODO separate build for header/footer HTML so that unique filenames for JS/CSS
+# files can be used to break browser caching. 
 PANDOC_ARGS = -s \
 	      -f markdown+autolink_bare_uris+task_lists \
 	      --template templates/base.html \
 	      -V 'mathfont:latinmodern-math.otf' -V 'monofont:DejaVuSansMono.ttf' --mathml \
 	      --highlight-style breezeDark \
-	      --css ../assets/compressed-style.css \
 	      -A templates/footer.html
-
-CSS_HASH := $(shell sha256sum $(ASSETS_SOURCE_DIR)/compressed-style.css | head -c 10)
-CSS_FILENAME := $(ASSETS_SOURCE_DIR)/compressed-style$(CSS_HASH).css))
 
 .PHONY: all clean build_assets $(ASSET_FILES)
 
@@ -41,8 +41,11 @@ all: $(TARGETS) $(ASSET_BUILDS) $(IMAGE_BUILDS)
 
 $(ASSETS)/%: $(ASSETS_SOURCE_DIR)/%
 	@mkdir -p $(ASSETS)
+	$(eval FILE_HASH := $(shell sha256sum $^ | head -c 10))
+	$(eval FILE_NAME := $(basename $@)-$(FILE_HASH)$(suffix $@))
+	$(info FILE_NAME is $(FILE_NAME))
 	@echo "Copying $^"
-	cp $^ $@ 
+	cp $^ $(FILE_NAME) 
 
 $(IMAGES)/%: $(IMAGES_SOURCE_DIR)/%
 	@mkdir -p $(IMAGES)
@@ -52,7 +55,7 @@ $(IMAGES)/%: $(IMAGES_SOURCE_DIR)/%
 # Pattern rule to build $(TARGETS)
 $(BUILD)/%/index.html: $(MARKDOWN_SOURCE_DIR)/%.md 
 	@mkdir -p $(@D)
-	pandoc $(PANDOC_ARGS) -o $@ $<
+	pandoc $(PANDOC_ARGS) --css ../assets/$(CSS_FILENAME) -o $@ $<
 
 clean:
 	rm -rf $(BUILD_DIRS)
