@@ -1,0 +1,40 @@
+<!--
+$if(author-meta)$
+<h2>By: $author-meta$</h2>
+$endif$
+$if(subtitle)$
+<p class="subtitle">$subtitle$</p>
+$endif$
+$for(author)$
+<p class="author">$author$</p>
+$endfor$
+$if(date)$
+<p class="date">$date$</p>
+$endif$
+-->
+<header id="top">
+  <div class="container">
+    $if(title)$
+    <h1><a href="/">$title</a></h1>
+    $endif$
+    $if(author)$
+    <h4>Software Development Resources by $author$.</h4>
+    $endif$
+    <section id="main-nav">
+      <button class="navbar-toggler hidden-md-up" type="button" data-toggle="collapse" data-target="#collapsingMainNavbar">
+        MENU&nbsp;&#9776;
+      </button>
+      <div id="collapsingMainNavbar" class="collapse navbar-toggleable-sm">
+        <nav class="navbar">
+          <ul class="nav navbar-nav">
+            <li class="nav-item"><a href="/" class="btn nav-link active">Home</a></li>
+            <li class="nav-item"><a href="/categories" class="btn nav-link">Posts by Category</a></li>
+            <li class="nav-item"><a href="/contact" class="btn nav-link">Contact</a></li>
+            <li class="nav-item"><a href="https://github.com/DavidCWebs" class="btn nav-link">GitHub</a></li>
+          </ul>
+        </nav>
+      </div>
+    </section>
+  </div>
+</header>
+
