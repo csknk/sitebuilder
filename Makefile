@@ -21,6 +21,7 @@ TARGETS :=$(MARKDOWN_FILES:%.md=$(BUILD)/%/index.html)
 ASSET_BUILDS :=$(ASSET_FILES:%=$(ASSETS)/%)
 IMAGE_BUILDS :=$(IMAGE_FILES:%=$(IMAGES)/%)
 ABS_PATH := $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
+LINKS :=$(basename $(MARKDOWN_FILES))
 HEADER_HTML := templates/header.html
 
 # The hash is needed in a Make variable to build the link to the file created in the $(ASSETS) recipe.
@@ -43,7 +44,7 @@ PANDOC_ARGS = -s \
 
 .PHONY: all clean build_assets $(ASSET_FILES)
 
-all: $(TARGETS) $(ASSET_BUILDS) $(IMAGE_BUILDS)
+all: $(LINKS) $(TARGETS) $(ASSET_BUILDS) $(IMAGE_BUILDS)
 
 # The source markdown is really just HTML - use this hack so that pandoc inserts the required variables
 # during the build.
@@ -65,6 +66,12 @@ $(IMAGES)/%: $(IMAGES_SOURCE_DIR)/%
 	@mkdir -p $(IMAGES)
 	@echo "Copying $^"
 	cp $^ $@ 
+
+# Pattern rule to links to $(TARGETS).
+%: $(MARKDOWN_SOURCE_DIR)/%.md
+	if [ $@ = README ]; then \
+		echo "/" >> data/all_links; \
+		else echo $@ >> data/all_links ; fi
 
 # Pattern rule to build $(TARGETS). If the file is README.md, make it the homepage (build/index.html)
 $(BUILD)/%/index.html: $(MARKDOWN_SOURCE_DIR)/%.md $(HEADER_HTML)
