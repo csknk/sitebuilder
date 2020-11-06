@@ -1,55 +1,57 @@
 MARKDOWN_SOURCE_DIR := src
 ASSETS_SOURCE_DIR := assets
 IMAGES_SOURCE_DIR := images
+CONFIG := data/config.yaml
 
-# Built directories
+# Directories built by make
 BUILD := build
 ASSETS := $(BUILD)/$(ASSETS_SOURCE_DIR)
 IMAGES := $(BUILD)/$(IMAGES_SOURCE_DIR)
 
-# Base names of all markdown files in $(MARKDOWN_SOURCE_DIR) 
+# Base names of all markdown files in $(MARKDOWN_SOURCE_DIR), same for assets (js & css) & images 
 MARKDOWN_FILES := $(notdir $(wildcard $(MARKDOWN_SOURCE_DIR)/*.md))
-# Asset files (JS, CSS)
 ASSET_FILES := $(notdir $(wildcard $(ASSETS_SOURCE_DIR)/*))
-# Images
 IMAGE_FILES := $(notdir $(wildcard $(IMAGES_SOURCE_DIR)/*))
 
 # Directories to be built
 BUILD_DIRS := $(BUILD) $(ASSETS) $(IMAGES)
 
-# Pattern substitution to create the build targets.
-# Do this so we can run all: $(TARGETS)
+# Pattern substitution to create the build targets. Do this so we can run all: $(TARGETS) etc
 TARGETS :=$(MARKDOWN_FILES:%.md=$(BUILD)/%/index.html)
 ASSET_BUILDS :=$(ASSET_FILES:%=$(ASSETS)/%)
 IMAGE_BUILDS :=$(IMAGE_FILES:%=$(IMAGES)/%)
 ABS_PATH := $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
 HEADER_HTML := templates/header.html
 
-
-#
+# The hash is needed in a Make variable to build the link to the file created in the $(ASSETS) recipe.
 CSS_HASH := $(shell sha256sum $(ASSETS_SOURCE_DIR)/style.css | head -c 10)
-CSS_FILENAME := style-$(CSS_HASH).css
+CSS_FILENAME := ../assets/style-$(CSS_HASH).css
 JS_HASH := $(shell sha256sum $(ASSETS_SOURCE_DIR)/index.js | head -c 10)
 JS_FILENAME := ../assets/index-$(JS_HASH).js
 
-# Main content build - TODO separate build for header/footer HTML so that unique filenames for JS/CSS
-# files can be used to break browser caching. 
+# Main content pandoc build arguments 
 PANDOC_ARGS = -s \
 	      -f markdown+autolink_bare_uris+task_lists \
 	      --template templates/base.html \
 	      -V 'mathfont:latinmodern-math.otf' -V 'monofont:DejaVuSansMono.ttf' --mathml \
 	      --highlight-style breezeDark \
 	      -A templates/footer.html \
-	      -B templates/header.html \
-	      -M js=$(JS_FILENAME)
+	      -B $(HEADER_HTML) \
+	      --css $(CSS_FILENAME) \
+	      -M js=$(JS_FILENAME) \
+	      --metadata-file $(CONFIG)
 
 .PHONY: all clean build_assets $(ASSET_FILES)
 
-all: $(HEADER_HTML) $(TARGETS) $(ASSET_BUILDS) $(IMAGE_BUILDS)
+all: $(TARGETS) $(ASSET_BUILDS) $(IMAGE_BUILDS)
 
-$(HEADER_HTML): templates/header-source.html
-	pandoc -M author="David Egan" -M title="Big Kahoona Burger!" -o $@ $<
-
+# The source markdown is really just HTML - use this hack so that pandoc inserts the required variables
+# during the build.
+$(HEADER_HTML): templates/header-source.md
+	pandoc \
+		--metadata-file $(CONFIG) \
+		--template templates/header-source.html \
+		-o $@ $<
 
 $(ASSETS)/%: $(ASSETS_SOURCE_DIR)/%
 	@mkdir -p $(ASSETS)
@@ -67,7 +69,7 @@ $(IMAGES)/%: $(IMAGES_SOURCE_DIR)/%
 # Pattern rule to build $(TARGETS)
 $(BUILD)/%/index.html: $(MARKDOWN_SOURCE_DIR)/%.md $(HEADER_HTML)
 	@mkdir -p $(@D)
-	pandoc $(PANDOC_ARGS) --css ../assets/$(CSS_FILENAME) -o $@ $<
+	pandoc $(PANDOC_ARGS) -o $@ $<
 
 clean:
 	rm -rf $(BUILD_DIRS)

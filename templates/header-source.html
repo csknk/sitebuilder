@@ -1,21 +1,7 @@
-<!--
-$if(author-meta)$
-<h2>By: $author-meta$</h2>
-$endif$
-$if(subtitle)$
-<p class="subtitle">$subtitle$</p>
-$endif$
-$for(author)$
-<p class="author">$author$</p>
-$endfor$
-$if(date)$
-<p class="date">$date$</p>
-$endif$
--->
 <header id="top">
   <div class="container">
     $if(title)$
-    <h1><a href="/">$title</a></h1>
+    <h1><a href="/">$title$</a></h1>
     $endif$
     $if(author)$
     <h4>Software Development Resources by $author$.</h4>
@@ -30,7 +16,9 @@ $endif$
             <li class="nav-item"><a href="/" class="btn nav-link active">Home</a></li>
             <li class="nav-item"><a href="/categories" class="btn nav-link">Posts by Category</a></li>
             <li class="nav-item"><a href="/contact" class="btn nav-link">Contact</a></li>
-            <li class="nav-item"><a href="https://github.com/DavidCWebs" class="btn nav-link">GitHub</a></li>
+            $if(github)$
+            <li class="nav-item"><a href="https://github.com/$github$" class="btn nav-link">GitHub</a></li>
+            $endif$
           </ul>
         </nav>
       </div>
