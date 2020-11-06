@@ -66,10 +66,12 @@ $(IMAGES)/%: $(IMAGES_SOURCE_DIR)/%
 	@echo "Copying $^"
 	cp $^ $@ 
 
-# Pattern rule to build $(TARGETS)
+# Pattern rule to build $(TARGETS). If the file is README.md, make it the homepage (build/index.html)
 $(BUILD)/%/index.html: $(MARKDOWN_SOURCE_DIR)/%.md $(HEADER_HTML)
 	@mkdir -p $(@D)
-	pandoc $(PANDOC_ARGS) -o $@ $<
+	if [ $(basename $<) = src/README ]; then \
+		pandoc $(PANDOC_ARGS) -o $(BUILD)/index.html $< ; \
+		else pandoc $(PANDOC_ARGS) -o $@ $< ; fi
 
 clean:
 	rm -rf $(BUILD_DIRS)
