@@ -5,3 +5,5 @@ images/*
 !src/.gitkeep
 !assets/.gitkeep
 !images/.gitkeep
+!assets/style.css
+!assets/index.js
