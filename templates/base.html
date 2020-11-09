@@ -46,6 +46,11 @@ $styles.html()$
     $endif$
     <div class="main">
       <div class="container">
+        <ul>
+          $for(links)$
+          <li><a href="$links.url$">$links.name$</a></li>
+          $endfor$
+        </ul>
         <div id="main-content" class="com-sm-7">
           $body$
         </div>

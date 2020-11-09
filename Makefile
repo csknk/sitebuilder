@@ -2,6 +2,7 @@ MARKDOWN_SOURCE_DIR := src
 ASSETS_SOURCE_DIR := assets
 IMAGES_SOURCE_DIR := images
 CONFIG := data/config.yaml
+NAV := data/nav.yaml
 
 # Directories built by make
 BUILD := build
@@ -30,9 +31,10 @@ CSS_FILENAME := ../assets/style-$(CSS_HASH).css
 JS_HASH := $(shell sha256sum $(ASSETS_SOURCE_DIR)/index.js | head -c 10)
 JS_FILENAME := ../assets/index-$(JS_HASH).js
 
+#-f markdown+autolink_bare_uris+task_lists \
 # Main content pandoc build arguments 
 PANDOC_ARGS = -s \
-	      -f markdown+autolink_bare_uris+task_lists \
+	      -f markdown+task_lists \
 	      --template templates/base.html \
 	      -V 'mathfont:latinmodern-math.otf' -V 'monofont:DejaVuSansMono.ttf' --mathml \
 	      --highlight-style breezeDark \
@@ -40,8 +42,10 @@ PANDOC_ARGS = -s \
 	      -B $(HEADER_HTML) \
 	      --css $(CSS_FILENAME) \
 	      -M js=$(JS_FILENAME) \
-	      --metadata-file $(CONFIG)
+	      --metadata-file $(CONFIG) \
+	      --metadata-file $(NAV)
 
+SHELL := /bin/bash
 .PHONY: all clean build_assets $(ASSET_FILES)
 
 all: $(LINKS) $(TARGETS) $(ASSET_BUILDS) $(IMAGE_BUILDS)
@@ -59,24 +63,33 @@ $(ASSETS)/%: $(ASSETS_SOURCE_DIR)/%
 	$(eval FILE_HASH := $(shell sha256sum $^ | head -c 10))
 	$(eval FILE_NAME := $(basename $@)-$(FILE_HASH)$(suffix $@))
 	@echo "Copying $^"
-	cp $^ $(FILE_NAME)
-	scripts/compress.sh $(ABS_PATH)$(FILE_NAME)
+	@cp $^ $(FILE_NAME)
+	@scripts/compress.sh $(ABS_PATH)$(FILE_NAME)
 
 $(IMAGES)/%: $(IMAGES_SOURCE_DIR)/%
 	@mkdir -p $(IMAGES)
 	@echo "Copying $^"
-	cp $^ $@ 
+	@cp $^ $@ 
 
-# Pattern rule to links to $(TARGETS).
-%: $(MARKDOWN_SOURCE_DIR)/%.md
-	if [ $@ = README ]; then \
-		echo "/" >> data/all_links; \
-		else echo $@ >> data/all_links ; fi
+# Pattern rule to make links to $(TARGETS).
+%: $(MARKDOWN_SOURCE_DIR)/%.md | clear_nav
+	@[ -f $(NAV) ] || echo "links:" > $(NAV)
+	@if [ $@ != README ]; then \
+		echo -e "  -\n    url: /$@\n    name: \
+		$$(scripts/parse_yaml.py $^ title)" >> $(NAV); fi
+
+clear_nav:
+	rm $(NAV)
+
+#build-nav:
+#	$(eval NAV := $(shell cat templates/all_links.html)) \
+#	sed -i 's/NAV/$(NAV)/g' templates/base.html
 
 # Pattern rule to build $(TARGETS). If the file is README.md, make it the homepage (build/index.html)
+#$(BUILD)/%/index.html: $(MARKDOWN_SOURCE_DIR)/%.md $(HEADER_HTML) build-nav
 $(BUILD)/%/index.html: $(MARKDOWN_SOURCE_DIR)/%.md $(HEADER_HTML)
 	@mkdir -p $(@D)
-	if [ $(basename $<) = src/README ]; then \
+	@if [ $(basename $<) = src/README ]; then \
 		pandoc $(PANDOC_ARGS) -o $(BUILD)/index.html $< ; \
 		else pandoc $(PANDOC_ARGS) -o $@ $< ; fi
 
