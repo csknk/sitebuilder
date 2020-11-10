@@ -46,14 +46,17 @@ $styles.html()$
     $endif$
     <div class="main">
       <div class="container">
-        <ul>
+        <div id="main-content" class="col-sm-7">
+          $body$
+        </div>
+        <section id="frontpage-sidebar" class="col-sm-4 col-sm-offset-1">
+        <h3>Posts</h3>
+        <ul class="posts">
           $for(links)$
           <li><a href="$links.url$">$links.name$</a></li>
           $endfor$
         </ul>
-        <div id="main-content" class="com-sm-7">
-          $body$
-        </div>
+        </section>
       </div>
     </div>
     $for(include-after)$

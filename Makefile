@@ -31,8 +31,8 @@ CSS_FILENAME := ../assets/style-$(CSS_HASH).css
 JS_HASH := $(shell sha256sum $(ASSETS_SOURCE_DIR)/index.js | head -c 10)
 JS_FILENAME := ../assets/index-$(JS_HASH).js
 
-#-f markdown+autolink_bare_uris+task_lists \
 # Main content pandoc build arguments 
+# Setting `-f markdown+autolink_bare_uris` causes a problem when building links in Pandoc templates.
 PANDOC_ARGS = -s \
 	      -f markdown+task_lists \
 	      --template templates/base.html \
@@ -46,9 +46,11 @@ PANDOC_ARGS = -s \
 	      --metadata-file $(NAV)
 
 SHELL := /bin/bash
-.PHONY: all clean build_assets $(ASSET_FILES)
+
+.PHONY: all clean build_assets $(ASSET_FILES) clear_nav
 
 all: $(LINKS) $(TARGETS) $(ASSET_BUILDS) $(IMAGE_BUILDS)
+#all: $(TARGETS) $(ASSET_BUILDS) $(IMAGE_BUILDS)
 
 # The source markdown is really just HTML - use this hack so that pandoc inserts the required variables
 # during the build.
@@ -72,22 +74,19 @@ $(IMAGES)/%: $(IMAGES_SOURCE_DIR)/%
 	@cp $^ $@ 
 
 # Pattern rule to make links to $(TARGETS).
-%: $(MARKDOWN_SOURCE_DIR)/%.md | clear_nav
+%: $(MARKDOWN_SOURCE_DIR)/%.md | $(clear_nav)
 	@[ -f $(NAV) ] || echo "links:" > $(NAV)
 	@if [ $@ != README ]; then \
 		echo -e "  -\n    url: /$@\n    name: \
 		$$(scripts/parse_yaml.py $^ title)" >> $(NAV); fi
 
 clear_nav:
-	rm $(NAV)
-
-#build-nav:
-#	$(eval NAV := $(shell cat templates/all_links.html)) \
-#	sed -i 's/NAV/$(NAV)/g' templates/base.html
+	@[ -f $(NAV) ] && rm $(NAV)
+	@echo "Clearing nav..."
 
 # Pattern rule to build $(TARGETS). If the file is README.md, make it the homepage (build/index.html)
-#$(BUILD)/%/index.html: $(MARKDOWN_SOURCE_DIR)/%.md $(HEADER_HTML) build-nav
-$(BUILD)/%/index.html: $(MARKDOWN_SOURCE_DIR)/%.md $(HEADER_HTML)
+#$(BUILD)/%/index.html: $(MARKDOWN_SOURCE_DIR)/%.md | $(HEADER_HTML) | $(LINKS)
+$(BUILD)/%/index.html: $(MARKDOWN_SOURCE_DIR)/%.md | $(HEADER_HTML) 
 	@mkdir -p $(@D)
 	@if [ $(basename $<) = src/README ]; then \
 		pandoc $(PANDOC_ARGS) -o $(BUILD)/index.html $< ; \
@@ -95,3 +94,4 @@ $(BUILD)/%/index.html: $(MARKDOWN_SOURCE_DIR)/%.md $(HEADER_HTML)
 
 clean:
 	rm -rf $(BUILD_DIRS)
+	@[ -f $(NAV) ] && rm $(NAV)
