@@ -5,9 +5,8 @@ EXT=${FILE_NAME#*.}
 
 FILE_BASE=$(basename "${FILE_NAME}")
 
-# Remove spaces but not if enclosed between "", .., #., :; 
-#sed -ir 's/\(\".*\"\)\|\s*/\1/g' "${FILE_NAME}" 
-sed -ir 's/\([#\.\"'\'':].*[\.\"'\'';]\)\|\s*/\1/g' "${FILE_NAME}" 
+# Remove spaces but not if enclosed between "", .., #., :; #{ etc. 
+sed -ir 's/\([#\.\"'\'':].*[\.\"'\'';{]\)\|\s*/\1/g' "${FILE_NAME}" 
 
 # Remove newlines
 tr -d '\n' < "${FILE_NAME}" > /tmp/"${FILE_BASE}"

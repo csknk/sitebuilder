@@ -47,15 +47,25 @@ $styles.html()$
     <div class="main">
       <div class="container">
         <div id="main-content" class="col-sm-7">
+          <header>
+            $if(title)$
+            <h1>$title$</h1>
+            $endif$
+            $if(date)$
+            <span><i class="icon-clock"></i> <time datetime="">$date$</time></span><br>
+            $endif$
+            <span class="category"><i class="icon-tag"></i> <a class="category" href="/categories/python/">Python</a></span><br>
+            <span class="author"><i class="icon-user"></i> David Egan</span>
+          </header>
           $body$
         </div>
         <section id="frontpage-sidebar" class="col-sm-4 col-sm-offset-1">
-        <h3>Posts</h3>
-        <ul class="posts">
-          $for(links)$
-          <li><a href="$links.url$">$links.name$</a></li>
-          $endfor$
-        </ul>
+          <h3>Posts</h3>
+          <ul class="posts">
+            $for(links)$
+            <li><a href="$links.url$">$links.name$</a></li>
+            $endfor$
+          </ul>
         </section>
       </div>
     </div>

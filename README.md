@@ -24,8 +24,19 @@ I don't want to go down the road of learning complicated configs in languages an
 
 What Stage is it At?
 --------------------
-At the moment it's a very basic proof of concept and work in progress.
+At the moment it's a very fairly basic proof of concept and work in progress. It's a handy tool that I use to convert markdown notes into websites.
 
-You change styles by editing a css file and compressing this to `assets/compressed-style.css`. Use the `compress-css.sh` script for this for the time being (I plan to build this into the make process).
+All Markdown files in the `src` directory are processed by `pandoc` into HTML files. The resulting HTML includes a header and footer template: `templates/header.html` and `templates/footer.html`.
 
-I plan to add custom header and footer html files.
+A YAML collection of file names and their relative URLs is created at `data/nav.yaml`. This is used to build a basic menu of links to all files in the directory.
+
+Change styles by editing `assets/style.css`. This is compressed during the build. Add JavaScript to `assets/index.js`. CSS and JavaScript assets are given a unique hash during the build process to act as a cache buster.
+
+At the moment, JavaScript is not compressed because:
+
+* Compressing JavaScript (especially ES6) is complicated
+* This is for basic display of primarily textual data in HTML format, so tons of JS are not really necessary.
+
+Can I Deploy the Built HTML files?
+----------------------------------
+Yes. You could use `rsync` to copy them to a public web directory.

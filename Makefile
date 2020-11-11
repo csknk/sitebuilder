@@ -43,7 +43,7 @@ PANDOC_ARGS = -s \
 	      --css $(CSS_FILENAME) \
 	      -M js=$(JS_FILENAME) \
 	      --metadata-file $(CONFIG) \
-	      --metadata-file $(NAV)
+	      --metadata-file $(NAV) \
 
 SHELL := /bin/bash
 
@@ -74,20 +74,22 @@ $(IMAGES)/%: $(IMAGES_SOURCE_DIR)/%
 	@cp $^ $@ 
 
 # Pattern rule to make links to $(TARGETS).
-%: $(MARKDOWN_SOURCE_DIR)/%.md | $(clear_nav)
+%: $(MARKDOWN_SOURCE_DIR)/%.md | clear_nav
 	@[ -f $(NAV) ] || echo "links:" > $(NAV)
 	@if [ $@ != README ]; then \
 		echo -e "  -\n    url: /$@\n    name: \
 		$$(scripts/parse_yaml.py $^ title)" >> $(NAV); fi
 
 clear_nav:
-	@[ -f $(NAV) ] && rm $(NAV)
-	@echo "Clearing nav..."
+	@echo "Clearing $(NAV)"
+	@if [ -f $(NAV) ]; then rm $(NAV); else echo "No nav file to delete..."; fi
 
+#[ -z $${date} ] && date=$$(date -u '+%B %d, %Y') \
 # Pattern rule to build $(TARGETS). If the file is README.md, make it the homepage (build/index.html)
-#$(BUILD)/%/index.html: $(MARKDOWN_SOURCE_DIR)/%.md | $(HEADER_HTML) | $(LINKS)
 $(BUILD)/%/index.html: $(MARKDOWN_SOURCE_DIR)/%.md | $(HEADER_HTML) 
 	@mkdir -p $(@D)
+	@# If the source file has no date set, set it
+	@scripts/set_date.py $<
 	@if [ $(basename $<) = src/README ]; then \
 		pandoc $(PANDOC_ARGS) -o $(BUILD)/index.html $< ; \
 		else pandoc $(PANDOC_ARGS) -o $@ $< ; fi

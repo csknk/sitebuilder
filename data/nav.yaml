@@ -1,70 +1,7 @@
 links:
   -
-    url: /divisibility
-    name: 	Divisibility
-  -
-    url: /exponents
-    name: 	Exponents
-  -
-    url: /test2
-    name: 	Bitcoin Blockchain
-  -
-    url: /test
-    name: 	Qui est facere
-  -
-    url: /modular-division
-    name: 	Modular Division
-  -
-    url: /remainders
-    name: 	Division with Remainders
-  -
-    url: /rsa-algorithm
-    name: 	RSA Algorithm
-  -
-    url: /prime-numbers
-    name: 	Prime Numbers
-  -
-    url: /extended-euclideam-algorithm
-    name: 	Extended Euclidean Algorithm
-  -
-    url: /unique-factorization
-    name: 	Unique Factorization
-  -
-    url: /divisibility-cheatsheet
-    name: 	Divisibility Cheatsheet
-  -
-    url: /greatest-common-divisor
-    name: 	Greatest Common Divisor
-  -
-    url: /eulers-totient-function
-    name: 	Euler's Totient Function
-  -
-    url: /test3
-    name: 	My Ginormous Burger
-  -
-    url: /modular-arithmetic
-    name: 	Modular Arithmetic
-  -
-    url: /division-by-2
-    name: 	Division by Two
-  -
-    url: /fast-modular-exponentiation
-    name: 	Fast Modular Exponentiation
-  -
-    url: /fermats-little-theorem
-    name: 	Fermat's Little Theorem
-  -
-    url: /numbers
-    name: 	Numbers
-  -
-    url: /chinese-remainder-theorem
-    name: 	Chinese Remainder Theorem
-  -
-    url: /diophantine-equations
-    name: 	Diophantine Equations
-  -
-    url: /sets
-    name: 	Sets
+    url: /new
+    name: 	newest
   -
     url: /divisibility
     name: 	Divisibility
@@ -95,6 +32,9 @@ links:
   -
     url: /unique-factorization
     name: 	Unique Factorization
+  -
+    url: /abc
+    name: 	ABC
   -
     url: /divisibility-cheatsheet
     name: 	Divisibility Cheatsheet
