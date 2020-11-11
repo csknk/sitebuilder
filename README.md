@@ -10,11 +10,15 @@ If $a = p^n$ is a prime power then $Ø(p^n) = p^n - p^{n - 1}$
 
 ![Image showing formula](eulers-totient-function.png?raw=true "Euler's totient function")
 
-Pandoc does the heavy lifting and converts LaTeX in your markdown to this in your HTML:
+Pandoc does the heavy lifting and converts LaTeX in your markdown to this monster in your HTML:
 
 ```html
+<p>
+If
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>=</mo><msup><mi>p</mi><mi>n</mi></msup></mrow><annotation encoding="application/x-tex">a = p^n</annotation></semantics></math>
+ is a prime power then
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Ø</mi><mo stretchy="false" form="prefix">(</mo><msup><mi>p</mi><mi>n</mi></msup><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msup><mi>p</mi><mi>n</mi></msup><mo>−</mo><msup><mi>p</mi><mrow><mi>n</mi><mo>−</mo><mn>1</mn></mrow></msup></mrow><annotation encoding="application/x-tex">Ø(p^n) = p^n - p^{n - 1}</annotation></semantics></math>
-
+</p>
 ```
 
 
