@@ -10,6 +10,14 @@ If $a = p^n$ is a prime power then $Ø(p^n) = p^n - p^{n - 1}$
 
 ![Image showing formula](eulers-totient-function.png?raw=true "Euler's totient function")
 
+Pandoc does the heavy lifting and converts LaTeX in your markdown to this in your HTML:
+
+```html
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Ø</mi><mo stretchy="false" form="prefix">(</mo><msup><mi>p</mi><mi>n</mi></msup><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msup><mi>p</mi><mi>n</mi></msup><mo>−</mo><msup><mi>p</mi><mrow><mi>n</mi><mo>−</mo><mn>1</mn></mrow></msup></mrow><annotation encoding="application/x-tex">Ø(p^n) = p^n - p^{n - 1}</annotation></semantics></math>
+
+```
+
+
 Why?
 ----
 There are loads of great static site builders out there: Jekyll, Zola, Vuepress etc but I need something that is:
@@ -36,6 +44,10 @@ At the moment, JavaScript is not compressed because:
 
 * Compressing JavaScript (especially ES6) is complicated
 * This is for basic display of primarily textual data in HTML format, so tons of JS are not really necessary.
+
+Site Metadata
+-------------
+Set metadata in `data/config.yaml`. Currently only the `title` and `author` fields are used, but it would be easy to extend the HTML templates to make use of more metadata.
 
 Can I Deploy the Built HTML files?
 ----------------------------------
